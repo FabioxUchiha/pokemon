@@ -6,41 +6,41 @@ function Card() {
   const [pokemonData, setPokemonData] =  useState([]);
 
  useEffect(() => {
-   getPokemon()
-  },[pokemonData])
+  getPokemon()
+  },[])
   
   
   const getPokemon = async ()=>{
    const resp = await fetch('https://pokeapi.co/api/v2/pokemon/');
       const res = await resp.json();
+      const next = await res.next;
+      const previous = await res.previous;
       const results = await res.results;
-      const pkm = await results.map(poke => {
-        return{
-        url: poke.url,
-        name: poke.name
-        }
+      await results.forEach(el => {
+        fetch(el.url)
+        .then(res => res.json())
+        .then(json => {
+          let pokemon = {
+            id: json.id,
+            name: json.name,
+            avatar: json.sprites.front_default
+          }
+          setPokemon(...pokemon, pokemon)
+        })
       })
-      await setPokemon(pkm);
-      
-      
-      const arr = await[]
-     await pkm.map(async (item, index) => {
-      const respo = await fetch(item.url);
-      const respuesta = await respo.json()
-      const info = await{
-        "name": respuesta.name,
-        "img": respuesta.sprites.front_default
-      }
-      arr.push(info.name, info.img)
-    })
-      await setPokemonData(arr);
   }
+  
+  const Pokerender = (props)=> {
+    <figcaption>
+    <img src={props.avatar} alt={props.name}/>
+    </figcaption>
+  }
+
   return (
     <div className='rounded bg-red-500 mx-5 text-center'>
-    <div>
-    <p>{console.log(pokemonData)}</p>
-    </div>
-    
+    {pokemon.length === 0 ? <h2>Cargando...</h2> : pokemon.map(item =>
+      <Pokerender key={item.id} alt={item.name} src={item.avatar}/>
+    )}
     </div>
   )
 }
