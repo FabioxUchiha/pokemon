@@ -1,48 +1,48 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from "react";
 
 function Card() {
+  const [data, setData] = useState([]);
+  const [load, setLoad] = useState(false);
 
-  const [pokemon, setPokemon] = useState([]);
-  const [pokemonData, setPokemonData] =  useState([]);
-
- useEffect(() => {
-  getPokemon()
-  },[])
-  
-  
-  const getPokemon = async ()=>{
-   const resp = await fetch('https://pokeapi.co/api/v2/pokemon/');
-      const res = await resp.json();
-      const next = await res.next;
-      const previous = await res.previous;
-      const results = await res.results;
-      await results.forEach(el => {
-        fetch(el.url)
-        .then(res => res.json())
-        .then(json => {
-          let pokemon = {
-            id: json.id,
-            name: json.name,
-            avatar: json.sprites.front_default
-          }
-          setPokemon(...pokemon, pokemon)
+  useEffect(() => {
+    fetch("https://pokeapi.co/api/v2/pokemon/")
+      .then((res) => res.json())
+      .then((res) => res.results)
+      .then((res) =>
+        res.map((item) => {
+          fetch(item.url)
+            .then((res) => res.json())
+            .then((res) => {
+              let datos = {};
+              datos.push(res);
+              setData(datos);
+              setLoad(true);
+            });
         })
-      })
-  }
-  
-  const Pokerender = (props)=> {
-    <figcaption>
-    <img src={props.avatar} alt={props.name}/>
-    </figcaption>
-  }
+      )
+      .catch((err) => console.log(err));
+  }, []);
 
   return (
-    <div className='rounded bg-red-500 mx-5 text-center'>
-    {pokemon.length === 0 ? <h2>Cargando...</h2> : pokemon.map(item =>
-      <Pokerender key={item.id} alt={item.name} src={item.avatar}/>
-    )}
+    <div
+      className="grid-cols-1 sm:grid-cols-3 md:grid-cols-5 mx-5 text-center bg-red-500 rounded"
+      key="div-card"
+    >
+      {load === true ? (
+        data.map((i) => {
+          return (
+            <div key={i.id}>
+              <img src={i.sprites.front_default} alt={i.name} />
+              <h2>{i.name}</h2>
+              {console.log(i)}
+            </div>
+          );
+        })
+      ) : (
+        <h1>cargando</h1>
+      )}
     </div>
-  )
+  );
 }
 
-export default Card
+export default Card;
