@@ -5,22 +5,25 @@ function Card() {
   const [load, setLoad] = useState(false);
 
   useEffect(() => {
-    fetch("https://pokeapi.co/api/v2/pokemon/")
-      .then((res) => res.json())
-      .then((res) => res.results)
-      .then((res) =>
-        res.map((item) => {
-          fetch(item.url)
-            .then((res) => res.json())
-            .then((res) => {
-              let datos = [];
-              datos.push(res);
-              setData(datos);
-              setLoad(true);
-            });
-        })
-      )
-      .catch((err) => console.log(err));
+    const getData = () => {
+      var datos = [];
+      fetch("https://pokeapi.co/api/v2/pokemon/")
+        .then((res) => res.json())
+        .then((res) => res.results)
+        .then((res) =>
+          res.map((item) => {
+            fetch(item.url)
+              .then((res) => res.json())
+              .then((res) => {
+                datos.push(res);
+                setLoad(true);
+                setData(datos);
+              });
+          })
+        )
+        .catch((err) => console.log(err));
+    };
+    getData();
   }, []);
 
   return (
@@ -29,15 +32,13 @@ function Card() {
       key="div-card"
     >
       {load === true ? (
-        data.map((i) => {
-          return (
-            <div key={i.id}>
-              <img src={i.sprites.front_default} alt={i.name} />
-              <h2>{i.name}</h2>
-              {console.log(i.name)}
-            </div>
-          );
-        })
+        data.map((i) => (
+          <div key={i.id}>
+            <img src={i.sprites.front_default} alt={i.name} />
+            <h2>{i.name}</h2>
+            {console.log(data)}
+          </div>
+        ))
       ) : (
         <h1>cargando</h1>
       )}
