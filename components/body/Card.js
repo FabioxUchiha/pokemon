@@ -13,7 +13,7 @@ function Card() {
           fetch(item.url)
             .then((res) => res.json())
             .then((res) => {
-              let datos = {};
+              let datos = [];
               datos.push(res);
               setData(datos);
               setLoad(true);
@@ -34,7 +34,7 @@ function Card() {
             <div key={i.id}>
               <img src={i.sprites.front_default} alt={i.name} />
               <h2>{i.name}</h2>
-              {console.log(i)}
+              {console.log(i.name)}
             </div>
           );
         })
